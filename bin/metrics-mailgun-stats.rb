@@ -1,14 +1,13 @@
 #!/usr/bin/env ruby
 
-require 'sensu-plugin/check/cli'
+require 'sensu-plugin/metric/cli'
 require 'net/http'
 require 'json'
 require 'time'
 require 'aws-sdk-core'
-require 'tz'
-require 'sensu-plugins-mailgun'
+require '../lib/sensu-plugins-mailgun/common.rb'
 
-class CheckEmailTotals < Sensu::Plugin::Check::CLI
+class MetricsMailgunStats < Sensu::Plugin::Metric::CLI::Graphite
   include Common
   option :aws_access_key,
          short:       '-a AWS_ACCESS_KEY',
@@ -63,85 +62,31 @@ class CheckEmailTotals < Sensu::Plugin::Check::CLI
          long:        '--start-date START_DATE',
          description: 'The date to receive the stats starting from. YYYY-mm-DD'
 
-  option :day_of_month,
-         short:       '-m DAY_OF_MONTH',
-         long:        '--day-of-month DAY_OF_MONTH',
-         description: 'Day of month to run check',
-         proc: proc(&:to_i)
+  option :since_last_execution,
+         long:        '--since-last-execution',
+         boolean: true,
+         description: 'If the start date should be the last '
 
-  option :day_of_week,
-         short:       '-d DAY_OF_WEEK',
-         long:        '--day-of-week DAY_OF_WEEK',
-         description: 'Day of week to run check',
-         proc: proc(&:to_i)
-
-  option :hour_of_day,
-         short:       '-h HOUR_OF_DAY',
-         long:        '--hour-of-day HOUR_OF_DAY',
-         description: 'Hours of day to run check, utc',
-         default: 20,
-         proc: proc(&:to_i)
-
-  option :critical,
-         description: 'Count to critical at or below',
-         short: '-c COUNT',
-         long: '--critical COUNT',
-         default: 0,
-         proc: proc(&:to_i)
-
-  option :warning,
-         description: 'Count to warn at or below',
-         short: '-w WARNING',
-         long: '--warning WARNING',
-         default: 0,
-         proc: proc(&:to_i)
-
-  option :invert,
-         description: 'Invert thresholds to be maximums instead of minimums',
-         short: '-i',
-         long: '--invert',
-         default: false,
-         boolean: true
-
-  option :timezone,
-         short:       '-z TIMEZONE',
-         long:        '--timezone TIMEZONE',
-         default: 'America/New_York',
-         description: 'Timezone to use from ruby gem tz'
+  option :scheme,
+         description: 'Metric naming scheme',
+         long: '--scheme SCHEME',
+         default: "#{Socket.gethostname}.mailgun.aggregates"
 
   def run
-    curr_time = TZInfo::Timezone.get(config[:timezone]).now
-    if curr_time.hour != config[:hour_of_day]
-      ok
-    end
-
-    if config[:day_of_week] != nil && curr_time.wday != config[:day_of_week]
-      ok
-    end
-
-    if config[:day_of_month] != nil && curr_time.day != config[:day_of_month]
-      ok
-    end
-
     aws_config
     merge_s3_config
 
-    totalSent = getTotalSent config[:domains], config[:mailgunKey], config[:events], config[:tags], config[:start_date]
+    totalSent = getTotalSent config[:domains], config[:mailgunKey], config[:events], config[:tags]
 
-    critical "Expected #{config[:critical]} sent, got #{totalSent}" if totalSent <= config[:critical] && !config[:invert]
-    critical "Expected #{config[:critical]} sent, got #{totalSent}" if totalSent > config[:critical] && config[:invert]
-
-    warning "Expected #{config[:warning]} sent, got #{totalSent}" if totalSent <= config[:warning] && !config[:invert]
-    warning "Expected #{config[:warning]} sent, got #{totalSent}" if totalSent > config[:warning] && config[:invert]
+    output "#{config[:scheme]}", totalSent, Time.now.utc
 
     ok
   end
 
-  def getTotalSent(domains, mailgunKey, events, tags, startDate)
+  def getTotalSent(domains, mailgunKey, events, tags)
     sent = domains.map do |domain|
       begin
-        startDateString = !startDate.nil? ? "&#{startDate}" : ""
-        uri = URI("https://api.mailgun.net/v3/#{domain}/stats?#{events.map{|e|"event=#{e}"}.join("&")}&limit=1#{startDateString}")
+        uri = URI("https://api.mailgun.net/v3/#{domain}/stats?#{events.map{|e|"event=#{e}"}.join("&")}&limit=1")
         # uri = URI("https://api.mailgun.net/beta/#{domain}/stats/total?event=#{event}&duration=2d")
         req = Net::HTTP::Get.new(uri)
         req.basic_auth 'api', mailgunKey
@@ -157,6 +102,7 @@ class CheckEmailTotals < Sensu::Plugin::Check::CLI
     end
 
     counts = sent.map do |item|
+      puts "#{item}"
       if item != nil
         if (tags != nil && !tags.empty? && !(tags.length == 1 && tags[0] == ""))
             tags.map {|tag| item['items'][0]['tags'][tag] }.select{|v| !v.nil?}.inject(0) {|x, y| x + y}
