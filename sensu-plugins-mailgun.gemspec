@@ -23,7 +23,7 @@ Gem::Specification.new do |s|
 
   s.add_runtime_dependency 'sensu-plugin',      '1.1.0'
   s.add_runtime_dependency 'json',              '1.8.3'
-  s.add_runtime_dependency 'aws-sdk-core',      '2.1.8'
+  s.add_runtime_dependency 'aws-sdk-core',      '2.1.33'
   s.add_runtime_dependency 'tz',                '0.0.1'
   s.add_runtime_dependency 'tzinfo',            '1.2.2'
 end
