@@ -1,4 +1,27 @@
 #!/usr/bin/env ruby
+#
+#   metrics-mailgun-stats.rb
+#
+# DESCRIPTION:
+#
+#
+# OUTPUT:
+#   metric data
+#
+# PLATFORMS:
+#   Ruby environment that supports gem dependencies
+#
+# DEPENDENCIES:
+#   gem: sensu-plugin, aws-sdk
+#
+# USAGE:
+#
+# NOTES:
+#
+# LICENSE:
+#   Leon Gibat brendan.gibat@gmail.com
+#   Released under the same terms as Sensu (the MIT license); see LICENSE
+#   for details.
 
 require 'sensu-plugin/metric/cli'
 require 'net/http'
@@ -87,7 +110,6 @@ class MetricsMailgunStats < Sensu::Plugin::Metric::CLI::Graphite
     sent = domains.map do |domain|
       begin
         uri = URI("https://api.mailgun.net/v3/#{domain}/stats?#{events.map{|e|"event=#{e}"}.join("&")}&limit=1")
-        # uri = URI("https://api.mailgun.net/beta/#{domain}/stats/total?event=#{event}&duration=2d")
         req = Net::HTTP::Get.new(uri)
         req.basic_auth 'api', mailgunKey
 
