@@ -1,19 +1,36 @@
 language: ruby
 cache:
-  - bundler
+- bundler
+before_install:
+- openssl aes-256-cbc -K $encrypted_eee7930cd137_key -iv $encrypted_eee7930cd137_iv
+  -in certs/pvt_key -out certs/gem-private_key.pem -d
 install:
-  - bundle install
+- bundle install
 rvm:
-  - 1.9.3
-  - 2.0
-  - 2.1
-  - 2.2
+- 1.9.3
+- 2.0
+- 2.1
+- 2.2
 notifications:
   email:
     recipients:
-      - sensu-plugin@sensu-plugins.io
+    - sensu-plugin@sensu-plugins.io
     on_success: change
     on_failure: always
-
 script:
-  - 'bundle exec rake default'
+- bundle exec rake default
+- gem build sensu-plugins-mailgun.gemspec
+- gem install sensu-plugins-mailgun-*.gem
+deploy:
+  provider: rubygems
+  api_key:
+    secure: PMtCK6KdnRgn0rtu93vuLoHaoE2cs/vPPjezzP/JMVdeldMBXEfLY5qRDV9CCOHIRVitkwAR2s0hLA0dP4h7OkhNcudHEWokKwvONvdlVAEXvnGhuzYm5KfKbXAg4X9B/hltCN0uYJALceszAwHQypUBjGkcqpesD1cZsQhQbuMZKaoFpyffv8qpU6iZaokw+k6LUvL7SXofN29BtQ4tMUhdReWnqeD3I8g/3Mm1hGK4dZMDEV782IZbCuPWKZekzemX6SAa7awf1y7rjpnqlJRQsA+WK/wMrykK750TJNocWXTTVrrJVKcQZ6rVdZYK1N81coI5T1nK5kMQ4WkhlubPz9iUis+5Ak0rtcPeYYVOfatbg/HZudCpA/NRidBtF3Bnl4IBW85I7vl3F5BSG3oEi50n7alAxySYiDPwkv07JVdUY+jK0GwGPiLCwsynOcOHqmSWu9JC7itrsH6C3tLh6ViC9ijv6t4/Gyan7jtJs2nFs4FbHJzEfo1XLzFyACvHWZoh7NCyezJsMCrTYkfCwfOVC6fLksILn8alZA03NLdvIkQiUFlBiLL714C5FNC+9DsYv8R/kY2JoYtwunwBssH6rb9wSlvCS91zmhpZBpv9G0LNPB/tZD6Hq5jOVtFIjbTigu3R0MNp2Ck5dOPqT8ZKmDpeWmLNxp/osIc=
+  gem: sensu-plugins-mailgun
+  on:
+    tags: true
+    repo: sensu-plugins/sensu-plugins-mailgun
+    all_branches: true
+    rvm: 1.9.3
+    rvm: 2.0
+    rvm: 2.1
+    rvm: 2.2
