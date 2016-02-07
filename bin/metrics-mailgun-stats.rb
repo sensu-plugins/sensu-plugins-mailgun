@@ -96,7 +96,6 @@ class MetricsMailgunStats < Sensu::Plugin::Metric::CLI::Graphite
          default: "#{Socket.gethostname}.mailgun.aggregates"
 
   def run
-    aws_config
     merge_s3_config
 
     totalSent = getTotalSent config[:domains], config[:mailgunKey], config[:events], config[:tags]

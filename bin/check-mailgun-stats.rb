@@ -123,7 +123,6 @@ class CheckEmailTotals < Sensu::Plugin::Check::CLI
       ok
     end
 
-    aws_config
     merge_s3_config
 
     totalSent = getTotalSent config[:domains], config[:mailgunKey], config[:events], config[:tags], config[:start_date]
