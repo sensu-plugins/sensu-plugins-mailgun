@@ -9,7 +9,7 @@ else
   require_relative 'lib/sensu-plugins-mailgun'
 end
 
-pvt_key = '~/.ssh/gem-private_key.pem'
+pvt_key = 'certs/gem-private_key.pem'
 
 Gem::Specification.new do |s|
   s.authors                = ['Sensu-Plugins and contributors']
@@ -37,15 +37,15 @@ Gem::Specification.new do |s|
   s.test_files             = s.files.grep(%r{^(test|spec|features)/})
   s.version                = SensuPluginsMailgun::Version::VER_STRING
 
-  s.add_runtime_dependency 'sensu-plugin',      '1.2.0'
+  s.add_runtime_dependency 'sensu-plugin',      '~> 1.2'
 
   s.add_development_dependency 'bundler',                   '~> 1.7'
   s.add_development_dependency 'codeclimate-test-reporter', '~> 0.4'
   s.add_development_dependency 'github-markup',             '~> 1.3'
   s.add_development_dependency 'pry',                       '~> 0.10'
-  s.add_development_dependency 'rake',                      '~> 10.0'
+  s.add_development_dependency 'rake',                      '~> 10.5'
   s.add_development_dependency 'redcarpet',                 '~> 3.2'
-  s.add_development_dependency 'rubocop',                   '0.32.1'
-  s.add_development_dependency 'rspec',                     '~> 3.1'
+  s.add_development_dependency 'rubocop',                   '~> 0.37'
+  s.add_development_dependency 'rspec',                     '~> 3.4'
   s.add_development_dependency 'yard',                      '~> 0.8'
 end
