@@ -9,25 +9,6 @@ else
   require_relative 'lib/sensu-plugins-mailgun'
 end
 
-<<<<<<< HEAD
-Gem::Specification.new do |s|
-  s.name               = 'sensu-plugins-mailgun'
-  s.version            = '0.1.0'
-  s.licenses           = ['MIT']
-  s.summary            = "Sensu plugin for getting stats from the MailGun API"
-  s.description        = "I need dis"
-  s.authors            = ["Dreae"]
-  s.email              = 'thedreae@gmail.com'
-  s.executables        = Dir.glob('bin/**/*.rb').map { |file| File.basename(file) }
-  s.require_paths      = ['lib']
-  s.files              = Dir.glob('{bin,lib}/**/*')
-
-  s.add_runtime_dependency 'sensu-plugin',      '1.1.0'
-  s.add_runtime_dependency 'json',              '1.8.3'
-  s.add_runtime_dependency 'aws-sdk-core',      '~>2.1'
-  s.add_runtime_dependency 'tz',                '0.0.1'
-  s.add_runtime_dependency 'tzinfo',            '1.2.2'
-=======
 pvt_key = '~/.ssh/gem-private_key.pem'
 
 Gem::Specification.new do |s|
@@ -67,5 +48,4 @@ Gem::Specification.new do |s|
   s.add_development_dependency 'rubocop',                   '0.32.1'
   s.add_development_dependency 'rspec',                     '~> 3.1'
   s.add_development_dependency 'yard',                      '~> 0.8'
->>>>>>> d1db806469bbd624d8b2d41d6fff68294bfe8d9b
 end
