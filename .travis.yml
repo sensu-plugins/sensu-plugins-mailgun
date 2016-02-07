@@ -19,8 +19,8 @@ notifications:
     on_failure: always
 script:
 - bundle exec rake default
-- gem build sensu-plugins-couchdb.gemspec
-- gem install sensu-plugins-couchdb-*.gem
+- gem build sensu-plugins-mailgun.gemspec
+- gem install sensu-plugins-mailgun-*.gem
 deploy:
   provider: rubygems
   api_key:
