@@ -8,7 +8,7 @@ require 'aws-sdk-core'
 require 'tz'
 require 'sensu-plugins-mailgun'
 
-class CheckEmailTotals < Sensu::Plugin::Check::CLI
+class CheckMailgunTotals < Sensu::Plugin::Check::CLI
   include Common
   option :aws_access_key,
          short:       '-a AWS_ACCESS_KEY',
