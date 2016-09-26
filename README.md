@@ -8,9 +8,18 @@
 
 ## Functionality
 
+This sensu plugin is provides a metric and check for mailgun.
+
 ## Files
 
+* check-mailgun-stats.rb
+* metrics-mailgun-stats.rb
+
 ## Usage
+
+Use metrics-mailgun-stats.rb to pull in metrics from mailgun for tags / events / domains.
+
+check-mailgun-stats.rb is used to check events from mailgun for domains and tags, for a specific period of time during a month or week.
 
 ## Installation
 
