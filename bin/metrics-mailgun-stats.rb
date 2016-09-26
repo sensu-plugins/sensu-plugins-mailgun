@@ -37,20 +37,20 @@ class MetricsMailgunStats < Sensu::Plugin::Metric::CLI::Graphite
          long:        '--domains DOMAIN',
          description: 'Comma separated list of Mailgun domains to check',
          required: true,
-         proc: Proc.new { |d| d.split(",") }
+         proc: proc { |d| d.split(',') }
 
   option :events,
          short:       '-e EVENT',
          long:        '--events EVENT',
          default: ['sent'],
-         proc: Proc.new { |d| d.split(",") },
+         proc: proc { |d| d.split(',') },
          description: 'Comma separated list of Mailgun events to check. Defaults to "sent"'
 
   option :tags,
          short:       '-t TAGS',
          long:        '--tags TAGS',
          default: [],
-         proc: Proc.new { |d| d.split(",") },
+         proc: proc { |d| d.split(',') },
          description: 'Comma separated list of Mailgun tags to filter by.'
 
   option :start_date,
@@ -70,42 +70,43 @@ class MetricsMailgunStats < Sensu::Plugin::Metric::CLI::Graphite
   def run
     merge_s3_config
 
-    totalSent = getTotalSent config[:domains], config[:mailgunKey], config[:events], config[:tags]
+    total = total_sent config[:domains], config[:mailgunKey], config[:events], config[:tags]
 
-    output "#{config[:scheme]}", totalSent, Time.now.utc
+    output config[:scheme], total, Time.now.utc
 
     ok
   end
 
-  def getTotalSent(domains, mailgunKey, events, tags)
+  def total_sent(domains, mailgun_key, events, tags)
     sent = domains.map do |domain|
       begin
-        uri = URI("https://api.mailgun.net/v3/#{domain}/stats?#{events.map{|e|"event=#{e}"}.join("&")}&limit=1")
+        event_values = events.map { |e| "event=#{e}" }.join('&')
+        uri = URI("https://api.mailgun.net/v3/#{domain}/stats?#{event_values}&limit=1")
         req = Net::HTTP::Get.new(uri)
-        req.basic_auth 'api', mailgunKey
+        req.basic_auth 'api', mailgun_key
 
         http = Net::HTTP.new(uri.hostname, uri.port)
         http.use_ssl = true
 
         res = http.request(req)
       rescue => e
-          critical "Error talking to Mailgun API #{e}"
+        critical "Error talking to Mailgun API #{e}"
       end
       JSON.parse res.body
     end
 
     counts = sent.map do |item|
-      puts "#{item}"
-      if item != nil
-        if (tags != nil && !tags.empty? && !(tags.length == 1 && tags[0] == ""))
-            tags.map {|tag| item['items'][0]['tags'][tag] }.select{|v| !v.nil?}.inject(0) {|x, y| x + y}
+      puts item
+      if !item.nil?
+        if !tags.nil? && !tags.empty? && !(tags.length == 1 && tags[0] == '')
+          tags.map { |tag| item['items'][0]['tags'][tag] }.select { |v| !v.nil? }.inject(0) { |a, e| a + e }
         else
-            item['items'][0]['total_count']
+          item['items'][0]['total_count']
         end
       else
         0
       end
     end
-    counts.inject(0) {|x, y| x + y}
+    counts.inject(0) { |a, e| a + e }
   end
 end

@@ -131,7 +131,7 @@ class CheckMailgunTotals < Sensu::Plugin::Check::CLI
     counts = sent.map do |item|
       if !item.nil?
         if !tags.nil? && !tags.empty? && !(tags.length == 1 && tags[0] == '')
-          tags.map { |tag| item['items'][0]['tags'][tag] }.select { |v| !v.nil? }.inject(0) { |x, y| x + y }
+          tags.map { |tag| item['items'][0]['tags'][tag] }.select { |v| !v.nil? }.inject(0) { |a, e| a + e }
         else
           item['items'][0]['total_count']
         end
@@ -139,6 +139,6 @@ class CheckMailgunTotals < Sensu::Plugin::Check::CLI
         0
       end
     end
-    counts.inject(0) { |x, y| x + y }
+    counts.inject(0) { |a, e| a + e }
   end
 end
