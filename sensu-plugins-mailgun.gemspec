@@ -3,12 +3,6 @@ $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
 
 require 'date'
 
-if RUBY_VERSION < '2.0.0'
-  require 'sensu-plugins-mailgun'
-else
-  require_relative 'lib/sensu-plugins-mailgun'
-end
-
 Gem::Specification.new do |s|
   s.authors                = ['Sensu-Plugins and contributors']
   s.date                   = Date.today.to_s
@@ -32,7 +26,7 @@ Gem::Specification.new do |s|
   s.test_files             = s.files.grep(%r{^(test|spec|features)/})
   s.version                = SensuPluginsMailgun::Version::VER_STRING
 
-  s.add_runtime_dependency 'sensu-plugin', '~> 1.2'
+  s.add_runtime_dependency 'sensu-plugin',      '~> 1.3'
   s.add_runtime_dependency 'json',              '1.8.3'
   s.add_runtime_dependency 'tz',                '0.0.1'
   s.add_runtime_dependency 'tzinfo',            '1.2.2'
