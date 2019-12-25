@@ -30,7 +30,7 @@ Gem::Specification.new do |s|
   s.add_runtime_dependency 'sensu-plugin',      '~> 1.3'
   s.add_runtime_dependency 'json',              '1.8.5'
   s.add_runtime_dependency 'tz',                '0.0.1'
-  s.add_runtime_dependency 'tzinfo',            '1.2.2'
+  s.add_runtime_dependency 'tzinfo',            '2.0.1'
 
   s.add_development_dependency 'bundler',                   '~> 1.7'
   s.add_development_dependency 'codeclimate-test-reporter', '~> 0.4'
